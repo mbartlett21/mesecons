@@ -86,8 +86,8 @@ local update_on_place_dig = function (pos, node)
 
 	for _, r in ipairs(mesecon.flattenrules(rules)) do
 		local np = vector.add(pos, r)
-		if minetest.registered_nodes[minetest.get_node(np).name]
-		and minetest.registered_nodes[minetest.get_node(np).name].mesecon_wire then
+        local node = minetest.registered_nodes[minetest.get_node(np).name]
+		if node	and node.mesecon_wire then
 			wire_updateconnect(np)
 		end
 	end
