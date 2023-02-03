@@ -1,5 +1,5 @@
 -- naming scheme: wire:(xp)(zp)(xm)(zm)(xpyp)(zpyp)(xmyp)(zmyp)_on/off
--- where x= x direction, z= z direction, y= y direction, p = +1, m = -1, e.g. xpym = {x=1, y=-1, z=0}
+-- where x = x direction, z = z direction, y = y direction, p = +1, m = -1, e.g. xpym = {x = 1, y = -1, z = 0}
 -- The (xp)/(zpyp)/.. statements shall be replaced by either 0 or 1
 -- Where 0 means the wire has no visual connection to that direction and
 -- 1 means that the wire visually connects to that other node.
@@ -99,20 +99,20 @@ mesecon.register_autoconnect_hook("wire", update_on_place_dig)
 -- ## Wire node registration ##
 -- ############################
 -- Nodeboxes:
-local box_center = {-1/16, -.5, -1/16, 1/16, -.5+1/16, 1/16}
-local box_bump1 =  { -2/16, -8/16,  -2/16, 2/16, -13/32, 2/16 }
+local box_center = { -1/16,   -.5, -1/16, 1/16, -.5+1/16, 1/16 }
+local box_bump1 =  { -2/16, -8/16, -2/16, 2/16,   -13/32, 2/16 }
 
 local nbox_nid =
 {
-	[0] = {1/16, -.5, -1/16, 8/16, -.5+1/16, 1/16}, -- x positive
-	[1] = {-1/16, -.5, 1/16, 1/16, -.5+1/16, 8/16}, -- z positive
-	[2] = {-8/16, -.5, -1/16, -1/16, -.5+1/16, 1/16}, -- x negative
-	[3] = {-1/16, -.5, -8/16, 1/16, -.5+1/16, -1/16}, -- z negative
+	[0] = { 1/16, -.5, -1/16,  8/16, -.5+1/16,  1/16}, -- x positive
+	[1] = {-1/16, -.5,  1/16,  1/16, -.5+1/16,  8/16}, -- z positive
+	[2] = {-8/16, -.5, -1/16, -1/16, -.5+1/16,  1/16}, -- x negative
+	[3] = {-1/16, -.5, -8/16,  1/16, -.5+1/16, -1/16}, -- z negative
 
-	[4] = {.5-1/16, -.5+1/16, -1/16, .5, .4999+1/16, 1/16}, -- x positive up
-	[5] = {-1/16, -.5+1/16, .5-1/16, 1/16, .4999+1/16, .5}, -- z positive up
-	[6] = {-.5, -.5+1/16, -1/16, -.5+1/16, .4999+1/16, 1/16}, -- x negative up
-	[7] = {-1/16, -.5+1/16, -.5, 1/16, .4999+1/16, -.5+1/16}  -- z negative up
+	[4] = {.5-1/16, -.5+1/16,   -1/16,       .5, .4999+1/16,     1/16}, -- x positive up
+	[5] = {  -1/16, -.5+1/16, .5-1/16,     1/16, .4999+1/16,       .5}, -- z positive up
+	[6] = {    -.5, -.5+1/16,   -1/16, -.5+1/16, .4999+1/16,     1/16}, -- x negative up
+	[7] = {  -1/16, -.5+1/16,     -.5,     1/16, .4999+1/16, -.5+1/16}  -- z negative up
 }
 
 local tiles_off = { "mesecons_wire_off.png" }
@@ -125,8 +125,7 @@ local selectionbox =
 }
 
 -- go to the next nodeid (ex.: 01000011 --> 01000100)
-local nid_inc = function() end
-nid_inc = function (nid)
+local function nid_inc(nid)
 	local i = 0
 	while nid[i-1] ~= 1 do
 		nid[i] = (nid[i] ~= 1) and 1 or 0
@@ -227,7 +226,8 @@ local function register_wires()
 			sounds = mesecon.node_sound.default,
 			on_rotate = false,
 		}, {tiles = tiles_off, mesecons = meseconspec_off, groups = groups_off},
-		{tiles = tiles_on, mesecons = meseconspec_on, groups = groups_on})
+		{tiles = tiles_on, mesecons = meseconspec_on, groups = groups_on,
+	light_source = 3})
 
 		if not nid_inc(nid) then return end
 	end

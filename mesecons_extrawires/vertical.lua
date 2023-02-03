@@ -94,7 +94,7 @@ mesecon.register_node("mesecons_extrawires:vertical", {
 	sounds = mesecon.node_sound.default,
 },{
 	tiles = {"mesecons_wire_off.png"},
-	groups = {dig_immediate=3},
+	groups = {dig_immediate = 3, creative = 1},
 	mesecons = {conductor = {
 		state = mesecon.state.off,
 		onstate = "mesecons_extrawires:vertical_on",
@@ -107,7 +107,8 @@ mesecon.register_node("mesecons_extrawires:vertical", {
 		state = mesecon.state.on,
 		offstate = "mesecons_extrawires:vertical_off",
 		rules = vertical_rules,
-	}}
+	}},
+	light_source = 3
 })
 
 -- Vertical wire top
@@ -139,7 +140,8 @@ mesecon.register_node("mesecons_extrawires:vertical_top", {
 		state = mesecon.state.on,
 		offstate = "mesecons_extrawires:vertical_top_off",
 		rules = top_rules,
-	}}
+	}},
+	light_source = 3
 })
 
 -- Vertical wire bottom
@@ -171,7 +173,8 @@ mesecon.register_node("mesecons_extrawires:vertical_bottom", {
 		state = mesecon.state.on,
 		offstate = "mesecons_extrawires:vertical_bottom_off",
 		rules = bottom_rules,
-	}}
+	}},
+	light_source = 3
 })
 
 minetest.register_craft({
