@@ -44,27 +44,29 @@ mesecon={} -- contains all functions and all global variables
 mesecon.queue={} -- contains the ActionQueue
 mesecon.queue.funcs={} -- contains all ActionQueue functions
 
+mesecon.modpath = minetest.get_modpath("mesecons")
+
 -- Settings
-dofile(minetest.get_modpath("mesecons").."/settings.lua")
+dofile(mesecon.modpath .. "/settings.lua")
 
 -- Utilities like comparing positions,
 -- adding positions and rules,
 -- mostly things that make the source look cleaner
-dofile(minetest.get_modpath("mesecons").."/util.lua");
+dofile(mesecon.modpath .. "/util.lua");
 
 -- Presets (eg default rules)
-dofile(minetest.get_modpath("mesecons").."/presets.lua");
+dofile(mesecon.modpath .. "/presets.lua");
 
 -- The ActionQueue
--- Saves all the actions that have to be execute in the future
-dofile(minetest.get_modpath("mesecons").."/actionqueue.lua");
+-- Saves all the actions that have to be executed in the future
+dofile(mesecon.modpath .. "/actionqueue.lua");
 
 -- Internal stuff
 -- This is the most important file
 -- it handles signal transmission and basically everything else
 -- It is also responsible for managing the nodedef things,
 -- like calling action_on/off/change
-dofile(minetest.get_modpath("mesecons").."/internal.lua");
+dofile(mesecon.modpath .. "/internal.lua");
 
 -- API
 -- these are the only functions you need to remember
@@ -122,4 +124,6 @@ end
 dofile(minetest.get_modpath("mesecons").."/legacy.lua");
 
 --Services like turnoff receptor on dignode and so on
-dofile(minetest.get_modpath("mesecons").."/services.lua");
+dofile(mesecon.modpath.."/services.lua");
+
+print("[mesecons] Loaded!")
