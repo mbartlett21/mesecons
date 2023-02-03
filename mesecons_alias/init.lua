@@ -5,6 +5,7 @@ minetest.register_alias("mesecons:power_plant", "mesecons_powerplant:power_plant
 minetest.register_alias("mesecons:powerplant", "mesecons_powerplant:power_plant")
 minetest.register_alias("mesecons:meselamp", "mesecons_lamp:lamp_off")
 minetest.register_alias("mesecons:mesecon", "mesecons:wire_00000000_off")
+minetest.register_alias("mesecons:wire", "mesecons:wire_00000000_off")
 minetest.register_alias("mesecons:object_detector", "mesecons_detector:object_detector_off")
 minetest.register_alias("mesecons:wireless_inverter", "mesecons_wireless:wireless_inverter_on")
 minetest.register_alias("mesecons:wireless_receiver", "mesecons_wireless:wireless_receiver_off")
