@@ -142,8 +142,9 @@ end
 -- Store and read the ActionQueue to / from a file
 -- so that upcoming actions are remembered when the game
 -- is restarted
-queue.actions = mesecon.file2table("mesecon_actionqueue")
+local get_storage, set_storage = mesecon.storage("mesecon_actionqueue")
+queue_actions = get_storage()
 
 minetest.register_on_shutdown(function()
-	mesecon.table2file("mesecon_actionqueue", queue.actions)
+	set_storage(queue_actions)
 end)

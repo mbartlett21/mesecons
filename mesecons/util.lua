@@ -335,11 +335,7 @@ local function read_storage_file_compat(filename)
     return minetest.deserialize(t)
 end
 local function clear_storage_file_compat(filename)
-    local fr = io.open(wpath.."/"..filename, "r")
-    if not fr then return end
-    fr:close()
-    local f = io.open(wpath.."/"..filename, "w")
-    f:close()
+	os.remove(wpath.."/"..filename)
 end
 
 -- Use modstorage
@@ -354,7 +350,11 @@ function mesecon.storage(store_name)
         return minetest.deserialize(store)
     end
     local function set(table)
-        storage:set_string(store_name, minetest.serialize(table))
+    	if table then
+        	storage:set_string(store_name, minetest.serialize(table))
+        else
+        	storage:set_string(store_name, "")
+        end
         clear_storage_file_compat(store_name)
     end
     return get, set

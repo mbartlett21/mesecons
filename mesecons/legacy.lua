@@ -7,8 +7,9 @@ local function unhash_blockpos(hash)
 	return vector.multiply(minetest.get_position_from_hash(hash), BLOCKSIZE)
 end
 
-local old_forceloaded_blocks = mesecon.file2table("mesecon_forceloaded")
+local get, set = mesecon.storage("mesecon_forceloaded")
+local old_forceloaded_blocks = get()
 for hash, _ in pairs(old_forceloaded_blocks) do
 	minetest.forceload_free_block(unhash_blockpos(hash))
 end
-os.remove(minetest.get_worldpath().."/mesecon_forceloaded")
+set(nil)
