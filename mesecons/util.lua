@@ -322,21 +322,42 @@ function mesecon.flipstate(pos, node)
 	return newstate
 end
 
--- File writing / reading utilities
+-- Storage
+
+-- Compat with old worlds
 local wpath = minetest.get_worldpath()
-function mesecon.file2table(filename)
-	local f = io.open(wpath.."/"..filename, "r")
-	if f == nil then return {} end
-	local t = f:read("*all")
-	f:close()
-	if t == "" or t == nil then return {} end
-	return minetest.deserialize(t)
+local function read_storage_file_compat(filename)
+    local f = io.open(wpath.."/"..filename, "r")
+    if f == nil then return {} end
+    local t = f:read("*all")
+    f:close()
+    if t == "" or t == nil then return {} end
+    return minetest.deserialize(t)
+end
+local function clear_storage_file_compat(filename)
+    local fr = io.open(wpath.."/"..filename, "r")
+    if not fr then return end
+    fr:close()
+    local f = io.open(wpath.."/"..filename, "w")
+    f:close()
 end
 
-function mesecon.table2file(filename, table)
-	local f = io.open(wpath.."/"..filename, "w")
-	f:write(minetest.serialize(table))
-	f:close()
+-- Use modstorage
+local storage = minetest.get_mod_storage()
+function mesecon.storage(store_name)
+    local function get()
+        local store = storage:get_string(store_name)
+        if not store or store == "" then
+            -- Read from file for compat
+            return read_storage_file_compat(store_name)
+        end
+        return minetest.deserialize(store)
+    end
+    local function set(table)
+        storage:set_string(store_name, minetest.serialize(table))
+        clear_storage_file_compat(store_name)
+    end
+    return get, set
 end
 
 -- Block position "hashing" (convert to integer) functions for voxelmanip cache
