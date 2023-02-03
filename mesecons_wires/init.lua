@@ -146,8 +146,14 @@ local function register_wires()
 	local nid = {}
 	while true do
 		-- Create group specifiction and nodeid string (see note above for details)
-		local nodeid = 	  (nid[0] or "0")..(nid[1] or "0")..(nid[2] or "0")..(nid[3] or "0")
-				..(nid[4] or "0")..(nid[5] or "0")..(nid[6] or "0")..(nid[7] or "0")
+		local nodeid = (nid[0] or "0")
+                    .. (nid[1] or "0")
+                    .. (nid[2] or "0")
+                    .. (nid[3] or "0")
+                    .. (nid[4] or "0")
+                    .. (nid[5] or "0")
+                    .. (nid[6] or "0")
+                    .. (nid[7] or "0")
 
 		-- Calculate nodebox
 		local nodebox = {type = "fixed", fixed={box_center}}
@@ -199,9 +205,9 @@ local function register_wires()
 		local groups_on = {dig_immediate = 3, mesecon_conductor_craftable = 1,
 			not_in_creative_inventory = 1, not_in_craft_guide = 1}
 		local groups_off = {dig_immediate = 3, mesecon_conductor_craftable = 1}
-		if nodeid ~= "00000000" then
-			groups_off["not_in_creative_inventory"] = 1
-			groups_off["not_in_craft_guide"] = 1
+        if nodeid ~= "00000000" then
+			groups_off.not_in_creative_inventory = 1
+			groups_off.not_in_craft_guide = 1
 		end
 
 		mesecon.register_node(":mesecons:wire_"..nodeid, {
@@ -223,7 +229,7 @@ local function register_wires()
 		}, {tiles = tiles_off, mesecons = meseconspec_off, groups = groups_off},
 		{tiles = tiles_on, mesecons = meseconspec_on, groups = groups_on})
 
-		if (nid_inc(nid) == false) then return end
+		if not nid_inc(nid) then return end
 	end
 end
 register_wires()
