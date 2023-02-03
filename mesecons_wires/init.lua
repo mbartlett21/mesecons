@@ -141,6 +141,23 @@ local function nid_inc(nid)
 	return i <= 8
 end
 
+local rules = {
+	vector.new( 1,  0,  0),
+	vector.new( 0,  0,  1),
+	vector.new(-1,  0,  0),
+	vector.new( 0,  0, -1),
+
+	vector.new( 1, -1,  0),
+	vector.new( 0, -1,  1),
+	vector.new(-1, -1,  0),
+	vector.new( 0, -1, -1),
+
+	vector.new( 1,  1,  0),
+	vector.new( 0,  1,  1),
+	vector.new(-1,  1,  0),
+	vector.new( 0,  1, -1)
+}
+
 local function register_wires()
 	local nid = {}
 	while true do
@@ -172,22 +189,6 @@ local function register_wires()
 		if nodeid == "00000000" then
 			nodebox.fixed = {-8/16, -.5, -1/16, 8/16, -.5+1/16, 1/16}
 		end
-
-		local rules = {}
-		if (nid[0] == 1) then table.insert(rules, vector.new( 1,  0,  0)) end
-		if (nid[1] == 1) then table.insert(rules, vector.new( 0,  0,  1)) end
-		if (nid[2] == 1) then table.insert(rules, vector.new(-1,  0,  0)) end
-		if (nid[3] == 1) then table.insert(rules, vector.new( 0,  0, -1)) end
-
-		if (nid[0] == 1) then table.insert(rules, vector.new( 1, -1,  0)) end
-		if (nid[1] == 1) then table.insert(rules, vector.new( 0, -1,  1)) end
-		if (nid[2] == 1) then table.insert(rules, vector.new(-1, -1,  0)) end
-		if (nid[3] == 1) then table.insert(rules, vector.new( 0, -1, -1)) end
-
-		if (nid[4] == 1) then table.insert(rules, vector.new( 1,  1,  0)) end
-		if (nid[5] == 1) then table.insert(rules, vector.new( 0,  1,  1)) end
-		if (nid[6] == 1) then table.insert(rules, vector.new(-1,  1,  0)) end
-		if (nid[7] == 1) then table.insert(rules, vector.new( 0,  1, -1)) end
 
 		local meseconspec_off = { conductor = {
 			rules = rules,
