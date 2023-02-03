@@ -1,6 +1,7 @@
 mesecon.rules = {}
 mesecon.state = {}
 
+-- These rules are used for standard wire
 mesecon.rules.default = {
 	{x =  0, y =  0, z = -1},
 	{x =  1, y =  0, z =  0},
@@ -18,8 +19,26 @@ mesecon.rules.default = {
 
 mesecon.rules.floor = mesecon.merge_rule_sets(mesecon.rules.default, {{x = 0, y = -1, z = 0}})
 
+-- Pressure plates conduct to the node two below them
 mesecon.rules.pplate = mesecon.merge_rule_sets(mesecon.rules.floor, {{x = 0, y = -2, z = 0}})
 
+-- Buttons conduct like below:
+--[[
+Layers:
+
+000 y1
+0X0 y0
+000 y-1
+
+0X0 y1
+0X0 y0
+XXX y-1
+
+000 y1
+0B0 y0
+000 y-1
+
+]]
 mesecon.rules.buttonlike = {
 	{x = 1,  y =  0, z =  0},
 	{x = 1,  y =  1, z =  0},
