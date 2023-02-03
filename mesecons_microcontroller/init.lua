@@ -1,57 +1,62 @@
 local S = minetest.get_translator(minetest.get_current_modname())
 
 local EEPROM_SIZE = 255
+-- Contruct a string of size EEPROM_SIZE + 1
+local r = string.rep("0", EEPROM_SIZE + 1)
 
 local microc_rules = {}
+-- yc == microcontroller
 local yc = {}
 
 for a = 0, 1 do
 for b = 0, 1 do
 for c = 0, 1 do
 for d = 0, 1 do
-local nodename = "mesecons_microcontroller:microcontroller"..tostring(d)..tostring(c)..tostring(b)..tostring(a)
+local nodename = "mesecons_microcontroller:microcontroller" .. d .. c .. b .. a
 local top = "jeija_microcontroller_top.png"
-if tostring(a) == "1" then
-	top = top.."^jeija_microcontroller_LED_A.png"
+if a == 1 then
+	top = top .. "^jeija_microcontroller_LED_A.png"
 end
-if tostring(b) == "1" then
-	top = top.."^jeija_microcontroller_LED_B.png"
+if b == 1 then
+	top = top .. "^jeija_microcontroller_LED_B.png"
 end
-if tostring(c) == "1" then
-	top = top.."^jeija_microcontroller_LED_C.png"
+if c == 1 then
+	top = top .. "^jeija_microcontroller_LED_C.png"
 end
-if tostring(d) == "1" then
-	top = top.."^jeija_microcontroller_LED_D.png"
+if d == 1 then
+	top = top .. "^jeija_microcontroller_LED_D.png"
 end
-local groups
-if tostring(d)..tostring(c)..tostring(b)..tostring(a) ~= "0000" then
-	groups = {dig_immediate=2, not_in_creative_inventory=1, mesecon = 3, overheat = 1}
-else
-	groups = {dig_immediate=2, mesecon = 3, overheat = 1}
+local groups = { dig_immediate = 2, mesecon = 3, overheat = 1 }
+if a ~= 0 or b ~= 0 or c ~= 0 or d ~= 0 then
+	groups.not_in_creative_inventory = 1
 end
-local rules={}
-if (a == 1) then table.insert(rules, {x = -1, y = 0, z =  0}) end
-if (b == 1) then table.insert(rules, {x =  0, y = 0, z =  1}) end
-if (c == 1) then table.insert(rules, {x =  1, y = 0, z =  0}) end
-if (d == 1) then table.insert(rules, {x =  0, y = 0, z = -1}) end
 
-local input_rules={}
-if (a == 0) then table.insert(input_rules, {x = -1, y = 0, z =  0, name = "A"}) end
-if (b == 0) then table.insert(input_rules, {x =  0, y = 0, z =  1, name = "B"}) end
-if (c == 0) then table.insert(input_rules, {x =  1, y = 0, z =  0, name = "C"}) end
-if (d == 0) then table.insert(input_rules, {x =  0, y = 0, z = -1, name = "D"}) end
+local rules ={}
+if a == 1 then table.insert(rules, {x = -1, y = 0, z =  0}) end
+if b == 1 then table.insert(rules, {x =  0, y = 0, z =  1}) end
+if c == 1 then table.insert(rules, {x =  1, y = 0, z =  0}) end
+if d == 1 then table.insert(rules, {x =  0, y = 0, z = -1}) end
+
+local input_rules ={}
+if a == 0 then table.insert(input_rules, {x = -1, y = 0, z =  0, name = "A"}) end
+if b == 0 then table.insert(input_rules, {x =  0, y = 0, z =  1, name = "B"}) end
+if c == 0 then table.insert(input_rules, {x =  1, y = 0, z =  0, name = "C"}) end
+if d == 0 then table.insert(input_rules, {x =  0, y = 0, z = -1, name = "D"}) end
+
 microc_rules[nodename] = rules
 
-local mesecons = {effector =
-{
-	rules = input_rules,
-	action_change = function (pos, node, rulename, newstate)
+local mesecons = {
+	effector =
+	{
+		rules = input_rules,
+		action_change = function (pos, node, rulename, newstate)
 		if yc.update_real_portstates(pos, node, rulename, newstate) then
 			yc.update(pos)
 		end
 	end
-}}
-if nodename ~= "mesecons_microcontroller:microcontroller0000" then
+	}
+}
+if a ~= 0 or b ~= 0 or c ~= 0 or d ~= 0 then
 	mesecons.receptor = {
 		state = mesecon.state.on,
 		rules = rules
@@ -68,7 +73,7 @@ minetest.register_node(nodename, {
 		"jeija_microcontroller_sides.png",
 		"jeija_microcontroller_sides.png",
 		"jeija_microcontroller_sides.png"
-		},
+	},
 
 	sunlight_propagates = true,
 	paramtype = "light",
@@ -91,24 +96,24 @@ minetest.register_node(nodename, {
 	on_construct = function(pos)
 		local meta = minetest.get_meta(pos)
 		meta:set_string("code", "")
-		meta:set_string("formspec", "size[9,2.5]"..
-			"field[0.256,-0.2;9,2;code;Code:;]"..
-			"button[0  ,0.2;1.5,3;band;AND]"..
-			"button[1.5,0.2;1.5,3;bxor;XOR]"..
-			"button[3  ,0.2;1.5,3;bnot;NOT]"..
-			"button[4.5,0.2;1.5,3;bnand;NAND]"..
-			"button[6  ,0.2;1.5,3;btflop;T-Flop]"..
-			"button[7.5,0.2;1.5,3;brsflop;RS-Flop]"..
-			"button_exit[3.5,1;2,3;program;Program]")
+		meta:set_string("formspec", [[
+			size[9,2.5]
+			field[0.256,-0.2;9,2;code   ;Code:;]
+			button[0  ,0.2;1.5,3;band   ;AND]
+			button[1.5,0.2;1.5,3;bxor   ;XOR]
+			button[3  ,0.2;1.5,3;bnot   ;NOT]
+			button[4.5,0.2;1.5,3;bnand  ;NAND]
+			button[6  ,0.2;1.5,3;btflop ;T-Flop]
+			button[7.5,0.2;1.5,3;brsflop;RS-Flop]
+			button_exit[3.5,1;2,3;program;Program]
+		]])
 		meta:set_string("infotext", "Unprogrammed Microcontroller")
-		local r = ""
-		for i=1, EEPROM_SIZE+1 do r=r.."0" end --Generate a string with EEPROM_SIZE*"0"
 		meta:set_string("eeprom", r)
 	end,
 	on_receive_fields = function(pos, _, fields, sender)
 		local player_name = sender:get_player_name()
 		if minetest.is_protected(pos, player_name) and
-				not minetest.check_player_privs(player_name, {protection_bypass=true}) then
+				not minetest.check_player_privs(player_name, {protection_bypass = true}) then
 			minetest.record_protection_violation(pos, player_name)
 			return
 		end
@@ -129,15 +134,19 @@ minetest.register_node(nodename, {
 		if fields.code == nil then return end
 
 		meta:set_string("code", fields.code)
-		meta:set_string("formspec", "size[9,2.5]"..
-		"field[0.256,-0.2;9,2;code;Code:;"..minetest.formspec_escape(fields.code).."]"..
-		"button[0  ,0.2;1.5,3;band;AND]"..
-		"button[1.5,0.2;1.5,3;bxor;XOR]"..
-		"button[3  ,0.2;1.5,3;bnot;NOT]"..
-		"button[4.5,0.2;1.5,3;bnand;NAND]"..
-		"button[6  ,0.2;1.5,3;btflop;T-Flop]"..
-		"button[7.5,0.2;1.5,3;brsflop;RS-Flop]"..
-		"button_exit[3.5,1;2,3;program;Program]")
+		meta:set_string("formspec",
+			"size[9,2.5]"..
+			"field[0.256,-0.2;9,2;code;Code:;" ..
+			minetest.formspec_escape(fields.code) .. "]" ..
+			[[
+				button[0  ,0.2;1.5,3;band   ;AND]
+				button[1.5,0.2;1.5,3;bxor   ;XOR]
+				button[3  ,0.2;1.5,3;bnot   ;NOT]
+				button[4.5,0.2;1.5,3;bnand  ;NAND]
+				button[6  ,0.2;1.5,3;btflop ;T-Flop]
+				button[7.5,0.2;1.5,3;brsflop;RS-Flop]
+				button_exit[3.5,1;2,3;program;Program]
+			]])
 		meta:set_string("infotext", "Programmed Microcontroller")
 		yc.reset (pos)
 		yc.update(pos)
@@ -178,11 +187,9 @@ else
 end
 
 yc.reset = function(pos)
-	yc.action(pos, {a=false, b=false, c=false, d=false})
+	yc.action(pos, {a = false, b = false, c = false, d = false})
 	local meta = minetest.get_meta(pos)
 	meta:set_int("afterid", 0)
-	local r = ""
-	for i=1, EEPROM_SIZE+1 do r=r.."0" end --Generate a string with EEPROM_SIZE*"0"
 	meta:set_string("eeprom", r)
 end
 
@@ -313,7 +320,7 @@ yc.parse_get_params = function(code, starti)
 	while s ~= "" do
 		s = string.sub(code, i, i)
 		if code:sub(i, i) == '"' then
-			is_string = (is_string==false) --toggle is_string
+			is_string = (is_string ==false) --toggle is_string
 		end
 		if s == ")" and is_string == false then
 			table.insert(params, string.sub(code, starti, i-1)) -- i: ) i+1 after )
@@ -335,7 +342,7 @@ yc.parse_get_eeprom_param = function(cond, starti)
 	while s ~= "" do
 		s = string.sub(cond, i, i)
 		local b = s:byte()
-		if s == "" or 48 > b or b > 57 then
+		if s == "" or 48 > b or b > 57 then -- not numeric
 			addr = string.sub(cond, starti, i-1) -- i: last number i+1 after last number
 			return addr, i
 		end
@@ -412,7 +419,7 @@ yc.command_print = function(params, eeprom, L)
 			else return nil end
 		end
 	end
-	print(s) --don't remove
+	print(s) -- Print the data to the console window
 	return true
 end
 
@@ -424,7 +431,7 @@ yc.command_sbi = function(params, eeprom, L, Lv)
 
 	if #params[1]==1 then
 		local b = params[1]:byte()
-		if 65 <= b and b <= 68 then -- is a port
+		if 65 <= b and b <= 68 then -- is a port (A-D)
 			if status == "1" then
 				Lv = yc.set_portstate (params[1], true,  Lv)
 			else
@@ -436,7 +443,7 @@ yc.command_sbi = function(params, eeprom, L, Lv)
 
 	--is an eeprom address
 	local new_eeprom = "";
-	for i=1, #eeprom do
+	for i = 1, #eeprom do
 		if tonumber(params[1])==i then
 			new_eeprom = new_eeprom..status
 		else
@@ -573,9 +580,9 @@ yc.command_parsecondition = function(cond, L, eeprom)
 		local a = tonumber(cond:sub(i+1, i+1))
 		if cond:sub(i+1, i+1) == nil then break end
 		if s == "&" then
-			if a==nil then return nil end
-			if b==nil then return nil end
-			local buf = ((a==1) and (b==1))
+			if a ==nil then return nil end
+			if b ==nil then return nil end
+			local buf = ((a ==1) and (b ==1))
 			if buf == true  then buf = "1" end
 			if buf == false then buf = "0" end
 			cond = string.gsub(cond, b..s..a, buf)
@@ -583,8 +590,8 @@ yc.command_parsecondition = function(cond, L, eeprom)
 			l = string.len(cond)
 		end
 		if s == "|" then
-			if a==nil then return nil end
-			if b==nil then return nil end
+			if a ==nil then return nil end
+			if b ==nil then return nil end
 			local buf = ((a == 1) or (b == 1))
 			if buf == true  then buf = "1" end
 			if buf == false then buf = "0" end
@@ -593,9 +600,9 @@ yc.command_parsecondition = function(cond, L, eeprom)
 			l = string.len(cond)
 		end
 		if s == "~" then
-			if a==nil then return nil end
-			if b==nil then return nil end
-			local buf = (((a == 1) or (b == 1)) and not((a==1) and (b==1)))
+			if a ==nil then return nil end
+			if b ==nil then return nil end
+			local buf = (((a == 1) or (b == 1)) and not((a ==1) and (b ==1)))
 			if buf == true  then buf = "1" end
 			if buf == false then buf = "0" end
 			cond = string.gsub(cond, b..s..a, buf)
@@ -711,7 +718,7 @@ yc.get_virtual_portstates = function(pos) -- portstates according to the name
 	if a == nil then return nil end
 	a = a + 1
 
-	local Lvirtual = {a=false, b=false, c=false, d=false}
+	local Lvirtual = {a = false, b = false, c = false, d = false}
 	if name:sub(a  , a  ) == "1" then Lvirtual.d = true end
 	if name:sub(a+1, a+1) == "1" then Lvirtual.c = true end
 	if name:sub(a+2, a+2) == "1" then Lvirtual.b = true end
@@ -720,7 +727,7 @@ yc.get_virtual_portstates = function(pos) -- portstates according to the name
 end
 
 yc.merge_portstates = function(Lreal, Lvirtual)
-	local L = {a=false, b=false, c=false, d=false}
+	local L = {a = false, b = false, c = false, d = false}
 	if Lvirtual.a or Lreal.a then L.a = true end
 	if Lvirtual.b or Lreal.b then L.b = true end
 	if Lvirtual.c or Lreal.c then L.c = true end
