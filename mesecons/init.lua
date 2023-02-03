@@ -38,6 +38,7 @@
 --		rules = rules/get_rules
 --	}
 --}
+-- This has been partly modified by Morgan B
 
 -- PUBLIC VARIABLES
 mesecon={} -- contains all functions and all global variables
@@ -101,10 +102,11 @@ mesecon.queue:add_function("receptor_off", function (pos, rules)
 		local rulenames = mesecon.rules_link_rule_all(pos, rule)
 		for _, rulename in ipairs(rulenames) do
 			mesecon.vm_begin()
+			-- mesecon.changesignal(np, minetest.get_node(np), rulename, mesecon.state.off, 2)
 
 			-- Turnoff returns true if turnoff process was successful, no onstate receptor
 			-- was found along the way. Commit changes that were made in voxelmanip. If turnoff
-			-- returns true, an onstate receptor was found, abort voxelmanip transaction.
+			-- returns false, an onstate receptor was found, abort voxelmanip transaction.
 			if (mesecon.turnoff(np, rulename)) then
 				mesecon.vm_commit()
 			else
@@ -121,4 +123,9 @@ end
 --Services like turnoff receptor on dignode and so on
 dofile(mesecon.modpath.."/services.lua");
 
+-- Disallow other mods using local stuff
+-- mesecon.storage = nil
+-- mesecon.vm = nil
+-- mesecon.queue.add_function = nil
+-- mesecon.modpath = nil
 print("[mesecons] Loaded!")
