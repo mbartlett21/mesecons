@@ -1,5 +1,7 @@
 -- Dig and place services
 
+local vm = mesecon.vm
+
 mesecon.on_placenode = function(pos, node)
 	mesecon.execute_autoconnect_hooks_now(pos, node)
 	node = minetest.get_node(pos) -- Update the node in case it was just changed.
@@ -20,12 +22,12 @@ mesecon.on_placenode = function(pos, node)
 		end
 		local sources = mesecon.is_powered(pos)
 		if sources then
-			mesecon.vm_begin()
+			vm.begin()
 			for _, s in ipairs(sources) do
 				local rule = vector.subtract(s, pos)
 				mesecon.turnon(pos, rule)
 			end
-			mesecon.vm_commit()
+			vm.commit()
 		end
 	end
 

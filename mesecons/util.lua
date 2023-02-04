@@ -388,13 +388,17 @@ local vm_node_cache = nil
 -- Whether the current transaction will need a light update afterward.
 local vm_update_light = false
 
+local vm = {}
+
+mesecon.vm = vm
+
 -- Starts a VoxelManipulator-based transaction.
 --
 -- During a VM transaction, calls to vm_get_node and vm_swap_node operate on a
 -- cached copy of the world loaded via VoxelManipulators. That cache can later
 -- be committed to the real map by means of vm_commit or discarded by means of
 -- vm_abort.
-function mesecon.vm_begin()
+function vm.begin()
 	vm_cache = {}
 	vm_node_cache = {}
 	vm_update_light = false
@@ -402,7 +406,7 @@ end
 
 -- Finishes a VoxelManipulator-based transaction, freeing the VMs and map data
 -- and writing back any modified areas.
-function mesecon.vm_commit()
+function vm.commit()
 	for hash, tbl in pairs(vm_cache) do
 		if tbl.dirty then
 			local vm = tbl.vm
@@ -416,7 +420,7 @@ end
 
 -- Finishes a VoxelManipulator-based transaction, freeing the VMs and throwing
 -- away any modified areas.
-function mesecon.vm_abort()
+function vm.abort()
 	vm_cache = nil
 	vm_node_cache = nil
 end
@@ -434,13 +438,14 @@ end
 
 -- Gets the node at a given position during a VoxelManipulator-based
 -- transaction.
-function mesecon.vm_get_node(pos)
+function vm.get_node(pos)
 	local hash = minetest.hash_node_position(pos)
 	local node = vm_node_cache[hash]
 	if not node then
 		node = vm_get_or_create_entry(pos).vm:get_node_at(pos)
 		vm_node_cache[hash] = node
 	end
+	-- duplicate the table
 	return node.name ~= "ignore" and {name = node.name, param1 = node.param1, param2 = node.param2} or nil
 end
 
@@ -449,7 +454,7 @@ end
 -- Existing param1, param2, and metadata are left alone.
 --
 -- The swap will necessitate a light update unless update_light equals false.
-function mesecon.vm_swap_node(pos, name, update_light)
+function vm.swap_node(pos, name, update_light)
 	-- If one node needs a light update, all VMs should use light updates to
 	-- prevent newly calculated light from being overwritten by other VMs.
 	vm_update_light = vm_update_light or update_light ~= false
@@ -475,7 +480,7 @@ end
 -- Inside a VM transaction, the transaction’s VM cache is used.
 function mesecon.get_node_force(pos)
 	if vm_cache then
-		return mesecon.vm_get_node(pos)
+		return vm.get_node(pos)
 	else
 		local node = minetest.get_node_or_nil(pos)
 		if node == nil then
@@ -502,7 +507,7 @@ end
 -- The swap will necessitate a light update unless update_light equals false.
 function mesecon.swap_node_force(pos, name, update_light)
 	if vm_cache then
-		return mesecon.vm_swap_node(pos, name, update_light)
+		return vm.swap_node(pos, name, update_light)
 	else
 		-- This serves to both ensure the mapblock is loaded and also hand us
 		-- the old node table so we can preserve param2.
